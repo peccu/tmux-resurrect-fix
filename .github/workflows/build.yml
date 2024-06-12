@@ -1,0 +1,56 @@
+name: Rust Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y pkg-config libssl-dev
+
+    - name: Build
+      run: cargo build --release
+
+    - name: Upload Release Binary
+      uses: actions/upload-artifact@v3
+      with:
+        name: rust-binary
+        path: target/release/tmux-resurrect-fix
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: rust-binary
+        path: ./bin
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ./bin/tmux-resurrect-fix
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
