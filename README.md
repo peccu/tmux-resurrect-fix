@@ -5,8 +5,12 @@ Update the `last` symbolic link in `~/.tmux/resurrect` from blank (3 lines) to l
 ## USAGE
 
 ```bash
+## remove current wrong symlink
 $ rm ~/.tmux/resurrect/last
+## create correct symlink
 $ time tmux-resurrect-fix ~/.tmux/resurrect/ last
+## restore with it
+$ ~/.tmux/plugins/tmux-resurrect/scripts/restore.sh
 ```
 
 ## INSTALL
