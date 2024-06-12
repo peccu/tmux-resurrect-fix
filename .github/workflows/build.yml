@@ -44,7 +44,8 @@ jobs:
 
     - name: Get the current version
       id: vars
-      run: echo "::set-output name=version::$(cargo pkgid | cut -d# -f2 | cut -d: -f2)"
+      run: |
+        echo "::set-output name=version::$(cargo pkgid | cut -d# -f2 | cut -d: -f2)"
 
     - name: Create Tag
       id: create_tag
