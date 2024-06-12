@@ -42,6 +42,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Set up Git user
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+
     - name: Get the current version
       id: vars
       run: |
@@ -50,8 +55,6 @@ jobs:
     - name: Create Tag
       id: create_tag
       run: |
-        git config user.email peccul@gmail.com
-        git config user.name peccu
         git tag -a v${{ steps.vars.outputs.version }} -m "Release version ${{ steps.vars.outputs.version }}"
         git push origin v${{ steps.vars.outputs.version }}
 
