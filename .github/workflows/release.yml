@@ -6,8 +6,33 @@ on:
       - 'v*'
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y pkg-config libssl-dev
+
+    - name: Build
+      run: cargo build --release
+
+    - name: Upload Release Binary
+      uses: actions/upload-artifact@v3
+      with:
+        name: rust-binary
+        path: target/release/tmux-resurrect-fix
+
   release:
     runs-on: ubuntu-latest
+    needs: build
 
     steps:
     - name: Checkout repository
