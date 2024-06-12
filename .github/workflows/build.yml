@@ -33,10 +33,28 @@ jobs:
         name: rust-binary
         path: target/release/tmux-resurrect-fix
 
-  release:
+  create_tag:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Get the current version
+      id: vars
+      run: echo "::set-output name=version::$(cargo pkgid | cut -d# -f2 | cut -d: -f2)"
+
+    - name: Create Tag
+      id: create_tag
+      run: |
+        git tag -a v${{ steps.vars.outputs.version }} -m "Release version ${{ steps.vars.outputs.version }}"
+        git push origin v${{ steps.vars.outputs.version }}
+
+  release:
+    needs: create_tag
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -51,6 +69,7 @@ jobs:
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: v${{ needs.create_tag.outputs.version }}
         files: ./bin/tmux-resurrect-fix
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
